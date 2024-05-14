@@ -105,6 +105,9 @@ class FaceIdentifier {
   static _extractFace(List<Face> faces) {
     //List<Rect> rect = [];
     bool wellPositioned = faces.isNotEmpty;
+    bool isCenter = faces.isNotEmpty;
+    bool isLeft = !isCenter;
+    bool isRight = !isCenter;
     Face? detectedFace;
 
     for (Face face in faces) {
@@ -140,7 +143,22 @@ class FaceIdentifier {
           noseBase == null) {
         wellPositioned = false;
       }
-
+      if (leftEar == null &&
+          rightEar != null &&
+          bottomMouth != null &&
+          rightMouth != null &&
+          leftMouth != null &&
+          noseBase != null) {
+        isLeft = true;
+      }
+      if (leftEar != null &&
+          rightEar == null &&
+          bottomMouth != null &&
+          rightMouth != null &&
+          leftMouth != null &&
+          noseBase != null) {
+        isRight = true;
+      }
       if (face.leftEyeOpenProbability != null) {
         if (face.leftEyeOpenProbability! < 0.5) {
           wellPositioned = false;
@@ -154,6 +172,12 @@ class FaceIdentifier {
       }
     }
 
-    return DetectedFace(wellPositioned: wellPositioned, face: detectedFace);
+    return DetectedFace(
+      wellPositioned: wellPositioned,
+      face: detectedFace,
+      isCenter: isCenter,
+      isLeft: isLeft,
+      isRight: isRight,
+    );
   }
 }
